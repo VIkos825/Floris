@@ -1,3 +1,6 @@
+using Floris.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace Floris
 {
     public class Program
@@ -8,6 +11,8 @@ namespace Floris
 
             // Add services to the container.
             builder.Services.AddRazorPages();
+            builder.Services.AddDbContext<FlorisDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -26,7 +31,10 @@ namespace Floris
 
             app.UseAuthorization();
 
-            app.MapRazorPages();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
             app.Run();
         }
