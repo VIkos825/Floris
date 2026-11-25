@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace Floris.Migrations
 {
     /// <inheritdoc />
@@ -19,9 +17,9 @@ namespace Floris.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ParentId = table.Column<int>(type: "int", nullable: true),
-                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Slug = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -39,8 +37,8 @@ namespace Floris.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Timezone = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Timezone = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,8 +53,10 @@ namespace Floris.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Palette = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Occasion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TargetBudget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Style = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    TargetBudget = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Style = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -69,29 +69,11 @@ namespace Floris.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FistName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -101,11 +83,11 @@ namespace Floris.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PhotoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Type = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    BasePrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    PhotoUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
                     ShelfLifeDays = table.Column<int>(type: "int", nullable: false)
                 },
@@ -126,14 +108,14 @@ namespace Floris.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CityId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Latitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Longitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(9,6)", precision: 9, scale: 6, nullable: false),
+                    Longitude = table.Column<decimal>(type: "decimal(9,6)", precision: 9, scale: 6, nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    DeliveryFlatRate = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FreeDeliveryAbove = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    DeliveryFlatRate = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    FreeDeliveryAbove = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -146,50 +128,27 @@ namespace Floris.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserAddresses",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FullAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Latitude = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Longitude = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    IsDefault = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserAddresses", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_UserAddresses_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
+                        name: "FK_Users_Roles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -200,7 +159,7 @@ namespace Floris.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomBouquetId = table.Column<int>(type: "int", nullable: false),
                     ProductId = table.Column<int>(type: "int", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -231,7 +190,7 @@ namespace Floris.Migrations
                     TimeTo = table.Column<TimeSpan>(type: "time", nullable: false),
                     MaxOrders = table.Column<int>(type: "int", nullable: false),
                     BookedOrders = table.Column<int>(type: "int", nullable: false),
-                    Surcharge = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Surcharge = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -252,10 +211,10 @@ namespace Floris.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: false),
                     StoreId = table.Column<int>(type: "int", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    CurrentPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     ReceivedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -273,6 +232,29 @@ namespace Floris.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserAddresses",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FullAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(9,6)", precision: 9, scale: 6, nullable: true),
+                    Longitude = table.Column<decimal>(type: "decimal(9,6)", precision: 9, scale: 6, nullable: true),
+                    IsDefault = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAddresses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAddresses_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -280,13 +262,14 @@ namespace Floris.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     StoreId = table.Column<int>(type: "int", nullable: false),
-                    DeliveryAddressId = table.Column<int>(type: "int", nullable: false),
+                    DeliveryMethod = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    DeliveryAddressId = table.Column<int>(type: "int", nullable: true),
                     DeliverySlotId = table.Column<int>(type: "int", nullable: false),
                     RecipientName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RecipientPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    DeliveryCost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     IsAnonymous = table.Column<bool>(type: "bit", nullable: false),
                     CustomerComment = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -326,11 +309,12 @@ namespace Floris.Migrations
                     ProductId = table.Column<int>(type: "int", nullable: true),
                     CustomBouquetId = table.Column<int>(type: "int", nullable: true),
                     Quantity = table.Column<int>(type: "int", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OrderItems", x => x.Id);
+                    table.CheckConstraint("CK_OrderItems_ProductOrBouquet", "([ProductId] IS NOT NULL AND [CustomBouquetId] IS NULL) OR ([ProductId] IS NULL AND [CustomBouquetId] IS NOT NULL)");
                     table.ForeignKey(
                         name: "FK_OrderItems_CustomBouquets_CustomBouquetId",
                         column: x => x.CustomBouquetId,
@@ -356,9 +340,9 @@ namespace Floris.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
-                    Method = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Method = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaidAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -381,7 +365,7 @@ namespace Floris.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     Url = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     UploadedByUserId = table.Column<int>(type: "int", nullable: false),
                     UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -401,22 +385,6 @@ namespace Floris.Migrations
                         principalColumn: "Id");
                 });
 
-            migrationBuilder.InsertData(
-                table: "Cities",
-                columns: new[] { "Id", "Name", "Timezone" },
-                values: new object[] { 1, "Москва", "Europe/Moscow" });
-
-            migrationBuilder.InsertData(
-                table: "Roles",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "client" },
-                    { 2, "florist" },
-                    { 3, "courier" },
-                    { 4, "admin" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_BouquetComponents_CustomBouquetId",
                 table: "BouquetComponents",
@@ -433,9 +401,15 @@ namespace Floris.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeliverySlots_StoreId",
+                name: "IX_Categories_Slug",
+                table: "Categories",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DeliverySlots_StoreId_SlotDate",
                 table: "DeliverySlots",
-                column: "StoreId");
+                columns: new[] { "StoreId", "SlotDate" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Inventory_ProductId",
@@ -443,9 +417,9 @@ namespace Floris.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Inventory_StoreId",
+                name: "IX_Inventory_StoreId_ProductId",
                 table: "Inventory",
-                column: "StoreId");
+                columns: new[] { "StoreId", "ProductId" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_CustomBouquetId",
@@ -473,9 +447,9 @@ namespace Floris.Migrations
                 column: "DeliverySlotId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Orders_StoreId",
+                name: "IX_Orders_StoreId_Status",
                 table: "Orders",
-                column: "StoreId");
+                columns: new[] { "StoreId", "Status" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_UserId",
@@ -503,6 +477,12 @@ namespace Floris.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Roles_Name",
+                table: "Roles",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stores_CityId",
                 table: "Stores",
                 column: "CityId");
@@ -513,8 +493,14 @@ namespace Floris.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
-                table: "UserRoles",
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_RoleId",
+                table: "Users",
                 column: "RoleId");
         }
 
@@ -537,9 +523,6 @@ namespace Floris.Migrations
                 name: "PhotoReports");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
-
-            migrationBuilder.DropTable(
                 name: "CustomBouquets");
 
             migrationBuilder.DropTable(
@@ -547,9 +530,6 @@ namespace Floris.Migrations
 
             migrationBuilder.DropTable(
                 name: "Orders");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Categories");
@@ -568,6 +548,9 @@ namespace Floris.Migrations
 
             migrationBuilder.DropTable(
                 name: "Cities");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }

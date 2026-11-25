@@ -1,0 +1,18 @@
+@model ProjectInfoSettings
+@{
+    ViewData["Title"] = "О проекте";
+}
+
+<section class="page">
+    <div class="container">
+        <h2 class="section-title">О проекте</h2>
+        <table class="info-table">
+            <tr><th>Тема</th><td>@Model.Topic</td></tr>
+            <tr><th>Исполнитель</th><td>@Model.Author</td></tr>
+            <tr><th>Руководитель</th><td>@Model.Supervisor</td></tr>
+            <tr><th>Учебное заведение</th><td>@Model.College</td></tr>
+            <tr><th>Год</th><td>@Model.Year</td></tr>
+            <tr><th>Версия</th><td>@Model.Version</td></tr>
+        </table>
+    </div>
+</section>

@@ -1,0 +1,18 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Ошибка";
+}
+
+<section class="page error-page">
+    <div class="container">
+        <h2 class="section-title">Ошибка @Model.StatusCode</h2>
+        <p class="text-center">@Model.Message</p>
+        @if (!string.IsNullOrEmpty(Model.RequestId))
+        {
+            <p class="muted text-center">Код запроса: <code>@Model.RequestId</code></p>
+        }
+        <p class="text-center">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">На главную</a>
+        </p>
+    </div>
+</section>

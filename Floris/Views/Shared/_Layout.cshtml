@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Floris</title>
+    <link rel="icon" href="~/favicon.ico" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/pages.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a asp-controller="Home" asp-action="Index" class="logo-link"><h1>🌸 Floris</h1></a>
+                </div>
+                <nav class="nav">
+                    <a asp-controller="Home" asp-action="Index">Главная</a>
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="catalog">Каталог</a>
+                    <a asp-controller="Home" asp-action="About">О проекте</a>
+                    <a asp-controller="Home" asp-action="Contacts">Контакты</a>
+                </nav>
+                <div class="header-actions">
+                    <button class="btn btn-outline" disabled title="Появится на следующих этапах">Войти</button>
+                    <button class="btn btn-primary" disabled title="Появится на следующих этапах">Корзина (0)</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Floris</h3>
+                    <p>Доставка цветов с любовью</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Контакты</h4>
+                    <p>📞 +7 (999) 123-45-67</p>
+                    <p>📧 info@floris.ru</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Режим работы</h4>
+                    <p>Ежедневно с 8:00 до 22:00</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; @DateTime.Now.Year Floris. Учебный проект.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

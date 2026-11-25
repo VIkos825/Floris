@@ -1,172 +1,91 @@
-﻿@{
-    ViewData["Title"] = "Floris - Доставка цветов";
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Доставка цветов";
+    var ru = CultureInfo.GetCultureInfo("ru-RU");
 }
 
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/site.css">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <h1>🌸 Floris</h1>
-                </div>
-                <nav class="nav">
-                    <a href="#catalog">Каталог</a>
-                    <a href="#constructor">Конструктор</a>
-                    <a href="#about">О нас</a>
-                    <a href="#contacts">Контакты</a>
-                </nav>
-                <div class="header-actions">
-                    <button class="btn btn-outline">Войти</button>
-                    <button class="btn btn-primary">Корзина (0)</button>
-                </div>
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <h2 class="hero-title">Цветы, которые говорят за вас</h2>
+            <p class="hero-subtitle">Свежие букеты с доставкой за 2 часа. Выберите из готовых композиций или соберите свой уникальный букет.</p>
+            <div class="hero-actions">
+                <a asp-action="Index" asp-fragment="catalog" class="btn btn-primary btn-large">Выбрать букет</a>
             </div>
         </div>
-    </header>
+    </div>
+</section>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h2 class="hero-title">Цветы, которые говорят за вас</h2>
-                <p class="hero-subtitle">Свежие букеты с доставкой за 2 часа. Соберите свой уникальный букет или выберите из готовых композиций.</p>
-                <div class="hero-actions">
-                    <button class="btn btn-primary btn-large">Выбрать букет</button>
-                    <button class="btn btn-outline btn-large">Собрать свой</button>
-                </div>
-            </div>
+<section class="city-selector">
+    <div class="container">
+        <div class="city-selector-content">
+            <span>Ваш город:</span>
+            <select class="city-select" disabled title="Выбор города и магазина заработает на следующем этапе">
+                @foreach (var city in Model.Cities)
+                {
+                    <option value="@city.Id">@city.Name</option>
+                }
+            </select>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- City Selector -->
-    <section class="city-selector">
-        <div class="container">
-            <div class="city-selector-content">
-                <span>Ваш город:</span>
-                <select class="city-select">
-                    <option value="1">Москва</option>
-                    <option value="2">Санкт-Петербург</option>
-                    <option value="3">Казань</option>
-                </select>
-            </div>
-        </div>
-    </section>
+<section id="catalog" class="catalog">
+    <div class="container">
+        <h2 class="section-title">Популярные букеты</h2>
 
-    <!-- Catalog Section -->
-    <section id="catalog" class="catalog">
-        <div class="container">
-            <h2 class="section-title">Популярные букеты</h2>
+        @if (Model.PopularBouquets.Count == 0)
+        {
+            <p class="muted text-center">Пока в каталоге нет букетов.</p>
+        }
+        else
+        {
             <div class="catalog-grid">
-                <!-- Product Card 1 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="~/images/bouquet1.jpg" alt="Букет нежность">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Букет "Нежность"</h3>
-                        <p class="product-description">25 розовых роз с эвкалиптом</p>
-                        <div class="product-footer">
-                            <span class="product-price">3 500 ₽</span>
-                            <button class="btn btn-primary btn-small">В корзину</button>
+                @foreach (var product in Model.PopularBouquets)
+                {
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="@(product.PhotoUrl ?? Url.Content("~/images/placeholder.svg"))" alt="@product.Name">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">@product.Name</h3>
+                            <p class="product-description">@product.Description</p>
+                            <div class="product-footer">
+                                <span class="product-price">@(product.BasePrice.ToString("N0", ru)) ₽</span>
+                                <button class="btn btn-primary btn-small" disabled title="Корзина появится на следующих этапах">В корзину</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Product Card 2 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="~/images/bouquet2.jpg" alt="Букет страсть">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Букет "Страсть"</h3>
-                        <p class="product-description">51 красная роза</p>
-                        <div class="product-footer">
-                            <span class="product-price">7 200 ₽</span>
-                            <button class="btn btn-primary btn-small">В корзину</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Card 3 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="~/images/bouquet3.jpg" alt="Букет весна">
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">Букет "Весна"</h3>
-                        <p class="product-description">Тюльпаны микс, 35 шт</p>
-                        <div class="product-footer">
-                            <span class="product-price">4 100 ₽</span>
-                            <button class="btn btn-primary btn-small">В корзину</button>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
-            <div class="catalog-actions">
-                <button class="btn btn-outline btn-large">Смотреть все букеты</button>
+        }
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <h2 class="section-title">Почему выбирают Floris</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Быстрая доставка</h3>
+                <p>Доставим букет за 2 часа в любую точку города</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>Фото-отчёт</h3>
+                <p>Пришлём фото готового букета перед доставкой</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Свой букет</h3>
+                <p>Соберите уникальную композицию в конструкторе</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💝</div>
+                <h3>Гарантия свежести</h3>
+                <p>Только свежие цветы, проверенные флористами</p>
             </div>
         </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Почему выбирают Floris</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Быстрая доставка</h3>
-                    <p>Доставим букет за 2 часа в любую точку города</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📸</div>
-                    <h3>Фото-отчёт</h3>
-                    <p>Пришлём фото готового букета перед доставкой</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎨</div>
-                    <h3>Свой букет</h3>
-                    <p>Соберите уникальную композицию в конструкторе</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💝</div>
-                    <h3>Гарантия свежести</h3>
-                    <p>Только свежие цветы, проверенные флористами</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Floris</h3>
-                    <p>Доставка цветов с любовью</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Контакты</h4>
-                    <p>📞 +7 (999) 123-45-67</p>
-                    <p>📧 info@floris.ru</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Режим работы</h4>
-                    <p>Ежедневно с 8:00 до 22:00</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Floris. Все права защищены.</p>
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+    </div>
+</section>

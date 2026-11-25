@@ -41,7 +41,8 @@ namespace Floris.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -62,18 +63,23 @@ namespace Floris.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ParentId");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Categories");
                 });
@@ -88,23 +94,17 @@ namespace Floris.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Timezone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Москва",
-                            Timezone = "Europe/Moscow"
-                        });
                 });
 
             modelBuilder.Entity("Floris.Models.CustomBouquet", b =>
@@ -114,6 +114,9 @@ namespace Floris.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Occasion")
                         .HasColumnType("nvarchar(max)");
@@ -125,6 +128,11 @@ namespace Floris.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TargetBudget")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -153,6 +161,7 @@ namespace Floris.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Surcharge")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<TimeSpan>("TimeFrom")
@@ -163,7 +172,7 @@ namespace Floris.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StoreId");
+                    b.HasIndex("StoreId", "SlotDate");
 
                     b.ToTable("DeliverySlots");
                 });
@@ -177,6 +186,7 @@ namespace Floris.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("CurrentPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("ExpiresAt")
@@ -193,7 +203,8 @@ namespace Floris.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
@@ -202,7 +213,7 @@ namespace Floris.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("StoreId");
+                    b.HasIndex("StoreId", "ProductId");
 
                     b.ToTable("Inventory");
                 });
@@ -221,11 +232,17 @@ namespace Floris.Migrations
                     b.Property<string>("CustomerComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DeliveryAddressId")
+                    b.Property<int?>("DeliveryAddressId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("DeliveryDate")
-                        .HasColumnType("datetime2");
+                    b.Property<decimal>("DeliveryCost")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DeliveryMethod")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("DeliverySlotId")
                         .HasColumnType("int");
@@ -243,12 +260,14 @@ namespace Floris.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("StoreId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("TotalAmount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("UserId")
@@ -260,9 +279,9 @@ namespace Floris.Migrations
 
                     b.HasIndex("DeliverySlotId");
 
-                    b.HasIndex("StoreId");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("StoreId", "Status");
 
                     b.ToTable("Orders");
                 });
@@ -288,6 +307,7 @@ namespace Floris.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -298,7 +318,10 @@ namespace Floris.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderItems_ProductOrBouquet", "([ProductId] IS NOT NULL AND [CustomBouquetId] IS NULL) OR ([ProductId] IS NULL AND [CustomBouquetId] IS NOT NULL)");
+                        });
                 });
 
             modelBuilder.Entity("Floris.Models.Payment", b =>
@@ -310,11 +333,13 @@ namespace Floris.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Method")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -324,7 +349,8 @@ namespace Floris.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("TransactionId")
                         .HasColumnType("nvarchar(max)");
@@ -349,7 +375,8 @@ namespace Floris.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("datetime2");
@@ -379,30 +406,35 @@ namespace Floris.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("BasePrice")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("PhotoUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("ShelfLifeDays")
                         .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.HasKey("Id");
 
@@ -421,33 +453,14 @@ namespace Floris.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.HasIndex("Name")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "client"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "florist"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "courier"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "admin"
-                        });
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("Floris.Models.Store", b =>
@@ -460,32 +473,39 @@ namespace Floris.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
 
                     b.Property<int>("CityId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("DeliveryFlatRate")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("FreeDeliveryAbove")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<decimal>("Latitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
 
                     b.Property<decimal>("Longitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -507,22 +527,34 @@ namespace Floris.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("FistName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("FirstName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -543,10 +575,12 @@ namespace Floris.Migrations
                         .HasColumnType("bit");
 
                     b.Property<decimal?>("Latitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
 
                     b.Property<decimal?>("Longitude")
-                        .HasColumnType("decimal(18,2)");
+                        .HasPrecision(9, 6)
+                        .HasColumnType("decimal(9,6)");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -560,21 +594,6 @@ namespace Floris.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserAddresses");
-                });
-
-            modelBuilder.Entity("Floris.Models.UserRole", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "RoleId");
-
-                    b.HasIndex("RoleId");
-
-                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("Floris.Models.BouquetComponent", b =>
@@ -641,8 +660,7 @@ namespace Floris.Migrations
                     b.HasOne("Floris.Models.UserAddress", "DeliveryAddress")
                         .WithMany()
                         .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Floris.Models.DeliverySlot", "DeliverySlot")
                         .WithMany()
@@ -748,6 +766,17 @@ namespace Floris.Migrations
                     b.Navigation("City");
                 });
 
+            modelBuilder.Entity("Floris.Models.User", b =>
+                {
+                    b.HasOne("Floris.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("Floris.Models.UserAddress", b =>
                 {
                     b.HasOne("Floris.Models.User", "User")
@@ -755,25 +784,6 @@ namespace Floris.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Floris.Models.UserRole", b =>
-                {
-                    b.HasOne("Floris.Models.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Floris.Models.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
 
                     b.Navigation("User");
                 });
@@ -811,7 +821,7 @@ namespace Floris.Migrations
 
             modelBuilder.Entity("Floris.Models.Role", b =>
                 {
-                    b.Navigation("UserRoles");
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Floris.Models.Store", b =>
@@ -826,8 +836,6 @@ namespace Floris.Migrations
                     b.Navigation("Addresses");
 
                     b.Navigation("Orders");
-
-                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }
