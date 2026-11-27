@@ -1,0 +1,83 @@
+@model CatalogViewModel
+@{
+    ViewData["Title"] = "Каталог";
+    var f = Model.Filter;
+    var currentUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<section class="page">
+    <div class="container">
+        <h2 class="section-title">Каталог</h2>
+        <p class="text-center muted-line">
+            Магазин: <strong>@Model.Store.Name</strong>, @Model.Store.Address ·
+            <a asp-controller="Store" asp-action="Select" asp-route-returnUrl="@currentUrl">сменить</a>
+        </p>
+
+        <div class="catalog-layout">
+            <aside class="catalog-sidebar">
+                <h3>Категории</h3>
+                <ul class="category-list">
+                    <li>
+                        <a asp-action="Index" asp-all-route-data="@Model.RouteValues(null)"
+                           class="@(string.IsNullOrEmpty(f.Category) ? "active" : null)">Все товары</a>
+                    </li>
+                    @foreach (var root in Model.Categories)
+                    {
+                        <li>
+                            <a asp-action="Index" asp-all-route-data="@Model.RouteValues(root.Slug)"
+                               class="@(f.Category == root.Slug ? "active" : null)">@root.Name</a>
+                            @if (root.Children.Count > 0)
+                            {
+                                <ul>
+                                    @foreach (var child in root.Children)
+                                    {
+                                        <li>
+                                            <a asp-action="Index" asp-all-route-data="@Model.RouteValues(child.Slug)"
+                                               class="@(f.Category == child.Slug ? "active" : null)">@child.Name</a>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </li>
+                    }
+                </ul>
+            </aside>
+
+            <div class="catalog-main">
+                <form method="get" asp-action="Index" class="filter-form">
+                    <input type="hidden" name="category" value="@f.Category" />
+                    <input type="search" name="search" value="@f.Search" maxlength="@CatalogFilter.MaxSearchLength"
+                           class="filter-input" placeholder="Название или описание" />
+                    <select name="sort" class="filter-input">
+                        <option value="popular" selected="@(f.Sort == CatalogSort.Popular)">По умолчанию</option>
+                        <option value="price_asc" selected="@(f.Sort == CatalogSort.PriceAsc)">Сначала дешёвые</option>
+                        <option value="price_desc" selected="@(f.Sort == CatalogSort.PriceDesc)">Сначала дорогие</option>
+                        <option value="name" selected="@(f.Sort == CatalogSort.Name)">По названию</option>
+                    </select>
+                    <label class="filter-check">
+                        <input type="checkbox" name="inStockOnly" value="true" checked="@f.InStockOnly" />
+                        Только в наличии
+                    </label>
+                    <button type="submit" class="btn btn-primary btn-small">Применить</button>
+                    <a asp-action="Index" class="btn btn-outline btn-small">Сбросить</a>
+                </form>
+
+                <p class="muted-line">Найдено товаров: @Model.Items.Count</p>
+
+                @if (Model.Items.Count == 0)
+                {
+                    <p class="text-center">Ничего не найдено. Попробуйте изменить фильтры.</p>
+                }
+                else
+                {
+                    <div class="catalog-grid">
+                        @foreach (var item in Model.Items)
+                        {
+                            <partial name="_ProductCard" model="item" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

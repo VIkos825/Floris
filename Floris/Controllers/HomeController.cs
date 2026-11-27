@@ -11,14 +11,18 @@ namespace Floris.Controllers
     public class HomeController : Controller
     {
         private readonly ICatalogService _catalog;
+        private readonly IStoreSelectionService _selection;
         private readonly ProjectInfoSettings _projectInfo;
 
         /// <summary>Создаёт контроллер.</summary>
         /// <param name="catalog">Сервис каталога.</param>
+        /// <param name="selection">Сервис выбора магазина.</param>
         /// <param name="projectInfo">Сведения о курсовом проекте из конфигурации.</param>
-        public HomeController(ICatalogService catalog, IOptions<ProjectInfoSettings> projectInfo)
+        public HomeController(ICatalogService catalog, IStoreSelectionService selection,
+                              IOptions<ProjectInfoSettings> projectInfo)
         {
             _catalog = catalog;
+            _selection = selection;
             _projectInfo = projectInfo.Value;
         }
 
@@ -27,10 +31,11 @@ namespace Floris.Controllers
         /// <returns>Представление главной страницы.</returns>
         public async Task<IActionResult> Index(CancellationToken ct)
         {
+            var store = await _selection.GetSelectedStoreAsync(ct);
             var model = new HomeViewModel
             {
-                Cities = await _catalog.GetCitiesAsync(ct),
-                PopularBouquets = await _catalog.GetPopularBouquetsAsync(6, ct)
+                SelectedStore = store,
+                PopularBouquets = await _catalog.GetPopularBouquetsAsync(store?.Id, 6, ct)
             };
             return View(model);
         }

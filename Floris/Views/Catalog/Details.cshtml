@@ -1,0 +1,56 @@
+@model ProductDetailsViewModel
+@{
+    var item = Model.Item;
+    ViewData["Title"] = item.Name;
+}
+
+<section class="page">
+    <div class="container">
+        <p class="breadcrumbs">
+            <a asp-controller="Catalog" asp-action="Index">Каталог</a> /
+            <a asp-controller="Catalog" asp-action="Index" asp-route-category="@item.CategorySlug">@item.CategoryName</a> /
+            @item.Name
+        </p>
+
+        <div class="product-details">
+            <div class="product-details-image">
+                <img src="@(item.PhotoUrl ?? Url.Content("~/images/placeholder.svg"))" alt="@item.Name">
+            </div>
+            <div class="product-details-info">
+                <h2>@item.Name</h2>
+                <span class="badge badge-static @item.Status.ToCssClass()">@item.Status.ToDisplayName()</span>
+                @if (item.Status == StockStatus.Low)
+                {
+                    <p class="muted-small">Осталось: @item.Quantity шт.</p>
+                }
+
+                <div class="product-details-price">
+                    @if (item.HasDiscount)
+                    {
+                        <span class="price-old">@(item.OldPrice?.ToRub())</span>
+                    }
+                    <span class="product-price">@item.Price.ToRub()</span>
+                </div>
+
+                <p class="product-details-description">@item.Description</p>
+                <p class="muted-small">Магазин: @Model.Store.Name, @Model.Store.Address</p>
+
+                <div class="product-details-actions">
+                    <button class="btn btn-primary btn-large" disabled title="Корзина появится на следующих этапах">В корзину</button>
+                    <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline btn-large">← В каталог</a>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Related.Count > 0)
+        {
+            <h3 class="related-title">Похожие товары</h3>
+            <div class="catalog-grid">
+                @foreach (var related in Model.Related)
+                {
+                    <partial name="_ProductCard" model="related" />
+                }
+            </div>
+        }
+    </div>
+</section>

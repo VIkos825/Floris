@@ -15,11 +15,15 @@ namespace Floris
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddDbContext<FlorisDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.Configure<ProjectInfoSettings>(
                 builder.Configuration.GetSection(ProjectInfoSettings.SectionName));
+
+            builder.Services.AddScoped<IStoreService, StoreService>();
+            builder.Services.AddScoped<IStoreSelectionService, StoreSelectionService>();
             builder.Services.AddScoped<ICatalogService, CatalogService>();
 
             var app = builder.Build();

@@ -1,7 +1,6 @@
 @model HomeViewModel
 @{
     ViewData["Title"] = "Доставка цветов";
-    var ru = CultureInfo.GetCultureInfo("ru-RU");
 }
 
 <section class="hero">
@@ -10,7 +9,7 @@
             <h2 class="hero-title">Цветы, которые говорят за вас</h2>
             <p class="hero-subtitle">Свежие букеты с доставкой за 2 часа. Выберите из готовых композиций или соберите свой уникальный букет.</p>
             <div class="hero-actions">
-                <a asp-action="Index" asp-fragment="catalog" class="btn btn-primary btn-large">Выбрать букет</a>
+                <a asp-controller="Catalog" asp-action="Index" class="btn btn-primary btn-large">Выбрать букет</a>
             </div>
         </div>
     </div>
@@ -19,13 +18,16 @@
 <section class="city-selector">
     <div class="container">
         <div class="city-selector-content">
-            <span>Ваш город:</span>
-            <select class="city-select" disabled title="Выбор города и магазина заработает на следующем этапе">
-                @foreach (var city in Model.Cities)
-                {
-                    <option value="@city.Id">@city.Name</option>
-                }
-            </select>
+            @if (Model.SelectedStore != null)
+            {
+                <span>Ваш магазин: <strong>@Model.SelectedStore.City.Name, @Model.SelectedStore.Name</strong></span>
+                <a asp-controller="Store" asp-action="Select" class="btn btn-outline btn-small">Сменить</a>
+            }
+            else
+            {
+                <span>Выберите магазин, чтобы увидеть наличие и цены.</span>
+                <a asp-controller="Store" asp-action="Select" class="btn btn-primary btn-small">Выбрать магазин</a>
+            }
         </div>
     </div>
 </section>
@@ -41,22 +43,13 @@
         else
         {
             <div class="catalog-grid">
-                @foreach (var product in Model.PopularBouquets)
+                @foreach (var item in Model.PopularBouquets)
                 {
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="@(product.PhotoUrl ?? Url.Content("~/images/placeholder.svg"))" alt="@product.Name">
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">@product.Name</h3>
-                            <p class="product-description">@product.Description</p>
-                            <div class="product-footer">
-                                <span class="product-price">@(product.BasePrice.ToString("N0", ru)) ₽</span>
-                                <button class="btn btn-primary btn-small" disabled title="Корзина появится на следующих этапах">В корзину</button>
-                            </div>
-                        </div>
-                    </div>
+                    <partial name="_ProductCard" model="item" />
                 }
+            </div>
+            <div class="catalog-actions">
+                <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline">Весь каталог</a>
             </div>
         }
     </div>

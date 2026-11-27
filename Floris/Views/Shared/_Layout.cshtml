@@ -17,11 +17,12 @@
                 </div>
                 <nav class="nav">
                     <a asp-controller="Home" asp-action="Index">Главная</a>
-                    <a asp-controller="Home" asp-action="Index" asp-fragment="catalog">Каталог</a>
+                    <a asp-controller="Catalog" asp-action="Index">Каталог</a>
                     <a asp-controller="Home" asp-action="About">О проекте</a>
                     <a asp-controller="Home" asp-action="Contacts">Контакты</a>
                 </nav>
                 <div class="header-actions">
+                    @await Component.InvokeAsync("SelectedStore")
                     <button class="btn btn-outline" disabled title="Появится на следующих этапах">Войти</button>
                     <button class="btn btn-primary" disabled title="Появится на следующих этапах">Корзина (0)</button>
                 </div>

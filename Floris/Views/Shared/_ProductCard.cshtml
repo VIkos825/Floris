@@ -1,0 +1,29 @@
+@model CatalogItemViewModel
+
+<div class="product-card @(Model.IsInStock ? null : "product-card-out")">
+    <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.Id" class="product-link">
+        <div class="product-image">
+            <img src="@(Model.PhotoUrl ?? Url.Content("~/images/placeholder.svg"))" alt="@Model.Name">
+            @if (Model.HasStoreData)
+            {
+                <span class="badge @Model.Status.ToCssClass()">@Model.Status.ToDisplayName()</span>
+            }
+        </div>
+    </a>
+    <div class="product-info">
+        <h3 class="product-title">
+            <a asp-controller="Catalog" asp-action="Details" asp-route-id="@Model.Id" class="product-link">@Model.Name</a>
+        </h3>
+        <p class="product-description">@Model.Description</p>
+        <div class="product-footer">
+            <span class="product-price">
+                @if (Model.HasDiscount)
+                {
+                    <span class="price-old">@(Model.OldPrice?.ToRub())</span>
+                }
+                @(Model.HasStoreData ? "" : "от ")@Model.Price.ToRub()
+            </span>
+            <button class="btn btn-primary btn-small" disabled title="Корзина появится на следующих этапах">В корзину</button>
+        </div>
+    </div>
+</div>

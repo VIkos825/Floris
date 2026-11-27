@@ -1,0 +1,18 @@
+@model SelectedStoreViewModel
+@{
+    // Со страницы выбора магазина и страницы ошибки возвращаться не нужно.
+    var path = Context.Request.Path;
+    string? currentUrl = path.StartsWithSegments("/Store") || path.StartsWithSegments("/Home/Error")
+        ? null
+        : $"{path}{Context.Request.QueryString}";
+}
+
+@if (Model.Store != null)
+{
+    <a class="store-chip" asp-controller="Store" asp-action="Select" asp-route-returnUrl="@currentUrl"
+       title="Сменить магазин">📍 @Model.Store.City.Name · @Model.Store.Name</a>
+}
+else
+{
+    <a class="store-chip store-chip-empty" asp-controller="Store" asp-action="Select" asp-route-returnUrl="@currentUrl">📍 Выбрать магазин</a>
+}
